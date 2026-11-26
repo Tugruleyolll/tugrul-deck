@@ -9,6 +9,7 @@ import io
 import json
 import os
 import secrets
+import shutil
 import socket
 import subprocess
 import sys
@@ -16,6 +17,7 @@ import threading
 import time
 from urllib.parse import urlparse
 import urllib.request
+import zipfile
 import comtypes
 from comtypes import CLSCTX_ALL
 import obsws_python as obs
@@ -35,6 +37,121 @@ if sys.stderr is None:
   sys.stderr = sys.stdout
 
 pyautogui.FAILSAFE = True
+
+# --- VERSION & AUTO-UPDATE CONFIGURATION ---
+GITHUB_REPO = "Tugruleyolll/tugrul-deck"
+VERSION_FILE = os.path.join(BASE_DIR, "version.json")
+
+
+def get_local_version():
+  try:
+    if os.path.exists(VERSION_FILE):
+      with open(VERSION_FILE, "r", encoding="utf-8") as f:
+        return json.load(f).get("version", "1.2.0").lstrip("v")
+  except Exception:
+    pass
+  return "1.2.0"
+
+
+CURRENT_VERSION = get_local_version()
+UPDATE_CACHE = {
+    "checked_at": 0,
+    "update_available": False,
+    "latest_version": CURRENT_VERSION,
+    "release_notes": "",
+    "release_url": f"https://github.com/{GITHUB_REPO}/releases",
+}
+
+
+def parse_semver(v_str):
+  parts = []
+  for p in str(v_str).lstrip("v").split("."):
+    digits = "".join(ch for ch in p if ch.isdigit())
+    parts.append(int(digits) if digits else 0)
+  while len(parts) < 3:
+    parts.append(0)
+  return tuple(parts[:3])
+
+
+def check_github_update(force=False):
+  now = time.time()
+  if not force and (now - UPDATE_CACHE["checked_at"]) < 600:
+    return UPDATE_CACHE
+
+  try:
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
+    req = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": "TugrulDeck-Updater",
+            "Accept": "application/vnd.github+json",
+        },
+    )
+    with urllib.request.urlopen(req, timeout=6) as resp:
+      data = json.loads(resp.read().decode("utf-8"))
+      latest_tag = str(data.get("tag_name", CURRENT_VERSION)).lstrip("v")
+      notes = str(data.get("body", "")).strip()[:240]
+      html_url = data.get("html_url", UPDATE_CACHE["release_url"])
+
+      UPDATE_CACHE["checked_at"] = now
+      UPDATE_CACHE["latest_version"] = latest_tag
+      UPDATE_CACHE["release_notes"] = notes
+      UPDATE_CACHE["release_url"] = html_url
+      UPDATE_CACHE["update_available"] = parse_semver(
+          latest_tag
+      ) > parse_semver(CURRENT_VERSION)
+  except Exception:
+    UPDATE_CACHE["checked_at"] = now
+
+  return UPDATE_CACHE
+
+
+def perform_self_update():
+  """Safely downloads latest release ZIP from GitHub without overwriting deck_token.txt or .env"""
+  try:
+    zip_url = f"https://github.com/{GITHUB_REPO}/archive/refs/heads/main.zip"
+    tmp_zip = os.path.join(BASE_DIR, "_update_pkg.zip")
+    tmp_dir = os.path.join(BASE_DIR, "_update_extract")
+
+    req = urllib.request.Request(
+        zip_url, headers={"User-Agent": "TugrulDeck-Updater"}
+    )
+    with urllib.request.urlopen(req, timeout=20) as resp, open(
+        tmp_zip, "wb"
+    ) as out_f:
+      shutil.copyfileobj(resp, out_f)
+
+    if os.path.exists(tmp_dir):
+      shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    with zipfile.ZipFile(tmp_zip, "r") as zf:
+      zf.extractall(tmp_dir)
+
+    extracted_items = os.listdir(tmp_dir)
+    if not extracted_items:
+      return False, "Arşiv boş çıktı."
+
+    src_root = os.path.join(tmp_dir, extracted_items[0])
+    protected_files = {"deck_token.txt", ".env", "deck.log"}
+
+    for item in os.listdir(src_root):
+      if item in protected_files or item.startswith("."):
+        continue
+      s = os.path.join(src_root, item)
+      d = os.path.join(BASE_DIR, item)
+      if os.path.isdir(s):
+        if os.path.exists(d):
+          shutil.rmtree(d, ignore_errors=True)
+        shutil.copytree(s, d)
+      else:
+        shutil.copy2(s, d)
+
+    os.remove(tmp_zip)
+    shutil.rmtree(tmp_dir, ignore_errors=True)
+    return True, "Güncelleme tamamlandı, sunucu yeniden başlatılıyor..."
+  except Exception as e:
+    return False, f"Güncelleme hatası: {e}"
+
 
 # --- SECURITY CONFIGURATION & ALLOWLISTS ---
 TOKEN_FILE = os.path.join(BASE_DIR, "deck_token.txt")
@@ -79,7 +196,7 @@ ALLOWED_APPS = {
     "yt_channel": "https://youtube.com/@Tugruleyolll",
     "yt_studio": "https://studio.youtube.com",
     "yt_music": "https://music.youtube.com",
-    "github": "https://github.com/Tugruleyolll",
+    "github": f"https://github.com/{GITHUB_REPO}",
 }
 
 ALLOWED_HOTKEYS = {
@@ -749,12 +866,61 @@ async def handle_command(websocket):
             await websocket.send(
                 json.dumps({"type": "chat_history", "messages": CHAT_HISTORY})
             )
+
+            upd = await asyncio.to_thread(check_github_update, False)
+            await websocket.send(
+                json.dumps({
+                    "type": "version_info",
+                    "current": CURRENT_VERSION,
+                    "latest": upd["latest_version"],
+                    "update_available": upd["update_available"],
+                    "notes": upd["release_notes"],
+                    "url": upd["release_url"],
+                })
+            )
             continue
         await websocket.send(json.dumps({"type": "auth_failed"}))
         await websocket.close(1008, "Authentication failed")
         return
 
-      if action == "set_volume" and isinstance(value, (int, float)):
+      if action == "check_update":
+        upd = await asyncio.to_thread(check_github_update, True)
+        await websocket.send(
+            json.dumps({
+                "type": "version_info",
+                "current": CURRENT_VERSION,
+                "latest": upd["latest_version"],
+                "update_available": upd["update_available"],
+                "notes": upd["release_notes"],
+                "url": upd["release_url"],
+            })
+        )
+
+      elif action == "apply_update":
+        await websocket.send(
+            json.dumps({
+                "type": "update_status",
+                "status": "updating",
+                "message": "GitHub üzerinden güncelleme indiriliyor...",
+            })
+        )
+        ok, msg = await asyncio.to_thread(perform_self_update)
+        if ok:
+          await broadcast({
+              "type": "update_status",
+              "status": "restarting",
+              "message": msg,
+          })
+          await asyncio.sleep(1.0)
+          os.execv(sys.executable, [sys.executable] + sys.argv)
+        else:
+          await websocket.send(
+              json.dumps(
+                  {"type": "update_status", "status": "error", "message": msg}
+              )
+          )
+
+      elif action == "set_volume" and isinstance(value, (int, float)):
         vol_val = max(0, min(100, int(value)))
         set_system_volume(vol_val)
         await broadcast(get_audio_state())
@@ -822,7 +988,7 @@ async def handle_command(websocket):
 
 
 async def main():
-  print(f"Tuğrul Deck Access Token (deck_token.txt): {ACCESS_TOKEN}")
+  print(f"Tuğrul Deck v{CURRENT_VERSION} | Access Token: {ACCESS_TOKEN}")
   threading.Thread(target=start_http_server, daemon=True).start()
   asyncio.create_task(monitor_system_loop())
   asyncio.create_task(kick_chat_listener())

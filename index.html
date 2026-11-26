@@ -113,11 +113,33 @@
             padding: 12px;
         }
 
+        .settings-section.update-highlight {
+            border-color: rgba(83, 252, 24, 0.45);
+            background: rgba(83, 252, 24, 0.06);
+        }
+
         .settings-label {
             font-size: 12px;
             font-weight: 800;
             color: #cbd5e1;
             letter-spacing: 0.3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ver-badge {
+            font-size: 10.5px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 6px;
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+        }
+
+        .ver-badge.new {
+            background: rgba(83, 252, 24, 0.2);
+            color: #53fc18;
         }
 
         .toggle-row {
@@ -176,6 +198,18 @@
 
         .action-btn-full {
             background: linear-gradient(135deg, var(--hydro-blue), var(--neon-purple));
+            border: none;
+            border-radius: 10px;
+            padding: 9px;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 12.5px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .update-btn-full {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
             border: none;
             border-radius: 10px;
             padding: 9px;
@@ -282,6 +316,7 @@
         }
 
         .gear-btn {
+            position: relative;
             background: rgba(255, 255, 255, 0.07);
             border: 1px solid rgba(255, 255, 255, 0.12);
             color: #e2e8f0;
@@ -293,6 +328,18 @@
 
         .gear-btn:active {
             transform: scale(0.9);
+        }
+
+        .update-dot {
+            display: none;
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #53fc18;
+            box-shadow: 0 0 8px #53fc18;
         }
 
         .status-badge {
@@ -954,7 +1001,7 @@
         </div>
     </div>
 
-    <!-- Settings Modal (Haptic Feedback + OBS Scene Mapping) -->
+    <!-- Settings Modal (Version Update + Haptic + OBS Scene Mapping) -->
     <div id="settingsModal" class="modal-overlay" onclick="if(event.target===this) closeSettings()">
         <div class="modal-box">
             <div class="modal-header">
@@ -962,7 +1009,22 @@
                 <button class="close-modal-btn" onclick="closeSettings()">✕</button>
             </div>
 
-            <!-- 1. Haptic Feedback -->
+            <!-- 1. Software Update Section -->
+            <div class="settings-section" id="updateSectionBox">
+                <div class="settings-label">
+                    <span>🚀 Uygulama Sürümü</span>
+                    <span class="ver-badge" id="versionBadgeText">v1.2.0</span>
+                </div>
+                <div style="font-size:11.5px; color:#94a3b8; line-height:1.45;" id="updateDescText">
+                    Uygulamanız güncel.
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:7px;">
+                    <button class="secondary-btn-full" onclick="sendCmd('check_update', null)">🔄 Kontrol Et</button>
+                    <button class="update-btn-full" id="applyUpdateBtn" style="display:none;" onclick="triggerApplyUpdate()">⬇️ Şimdi Güncelle</button>
+                </div>
+            </div>
+
+            <!-- 2. Haptic Feedback -->
             <div class="settings-section">
                 <div class="settings-label">📳 Dokunma Geri Bildirimi</div>
                 <div class="toggle-row">
@@ -971,7 +1033,7 @@
                 </div>
             </div>
 
-            <!-- 2. OBS Scene Name Mapping -->
+            <!-- 3. OBS Scene Name Mapping -->
             <div class="settings-section">
                 <div class="settings-label">🎥 OBS Sahne Adı Eşleştirme</div>
                 <div style="font-size:11px; color:#94a3b8; line-height:1.4;">
@@ -1021,7 +1083,10 @@
                 <span class="dot" id="statusDot"></span>
                 <span id="statusText">Bağlanıyor</span>
             </div>
-            <button class="gear-btn" onclick="openSettings()" title="Ayarlar">⚙️</button>
+            <button class="gear-btn" onclick="openSettings()" title="Ayarlar">
+                ⚙️
+                <span class="update-dot" id="headerUpdateDot"></span>
+            </button>
         </div>
     </header>
 
@@ -1381,6 +1446,12 @@
         const settingsModal = document.getElementById('settingsModal');
         const hapticToggleBtn = document.getElementById('hapticToggleBtn');
 
+        const headerUpdateDot = document.getElementById('headerUpdateDot');
+        const updateSectionBox = document.getElementById('updateSectionBox');
+        const versionBadgeText = document.getElementById('versionBadgeText');
+        const updateDescText = document.getElementById('updateDescText');
+        const applyUpdateBtn = document.getElementById('applyUpdateBtn');
+
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
         const headerStatsPill = document.getElementById('headerStatsPill');
@@ -1438,7 +1509,6 @@
             }
         }
 
-        // Settings Modal Functions
         function openSettings() {
             triggerVibrate(20);
             updateHapticButton();
@@ -1451,6 +1521,33 @@
 
         function closeSettings() {
             settingsModal.style.display = 'none';
+        }
+
+        function updateVersionUI(info) {
+            if (info.update_available) {
+                headerUpdateDot.style.display = 'block';
+                updateSectionBox.classList.add('update-highlight');
+                versionBadgeText.textContent = `v${info.current} → v${info.latest}`;
+                versionBadgeText.classList.add('new');
+                updateDescText.textContent = info.notes || `Yeni sürüm (v${info.latest}) yayınlandı!`;
+                applyUpdateBtn.style.display = 'block';
+                applyUpdateBtn.disabled = false;
+                applyUpdateBtn.textContent = '⬇️ Şimdi Güncelle';
+            } else {
+                headerUpdateDot.style.display = 'none';
+                updateSectionBox.classList.remove('update-highlight');
+                versionBadgeText.textContent = `v${info.current}`;
+                versionBadgeText.classList.remove('new');
+                updateDescText.textContent = 'Uygulamanız en güncel sürümde.';
+                applyUpdateBtn.style.display = 'none';
+            }
+        }
+
+        function triggerApplyUpdate() {
+            triggerVibrate(40);
+            applyUpdateBtn.disabled = true;
+            applyUpdateBtn.textContent = '⏳ İndiriliyor...';
+            sendCmd('apply_update', null);
         }
 
         function toggleHaptic() {
@@ -1821,6 +1918,16 @@
                         localStorage.removeItem('tugrul_deck_token');
                         authErrText.style.display = 'block';
                         authOverlay.style.display = 'flex';
+                    } else if (data.type === "version_info") {
+                        updateVersionUI(data);
+                    } else if (data.type === "update_status") {
+                        updateDescText.textContent = data.message;
+                        if (data.status === "restarting") {
+                            setTimeout(() => window.location.reload(), 2500);
+                        } else if (data.status === "error") {
+                            applyUpdateBtn.disabled = false;
+                            applyUpdateBtn.textContent = '⬇️ Tekrar Dene';
+                        }
                     } else if (data.type === "volume_update" && !isDraggingSlider) {
                         updateSliderVisual(data.level, data.muted);
                     } else if (data.type === "brightness_update" && !isDraggingBright) {
