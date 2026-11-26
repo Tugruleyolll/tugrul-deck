@@ -45,7 +45,7 @@ tugrul-deck/
 🚀 Kurulum ve Kullanım
 1. Depoyu Klonlayın
 Bash
-git clone [https://github.com/tugrul565/tugrul-deck.git](https://github.com/tugrul565/tugrul-deck.git)
+git clone [https://github.com/Tugruleyolll/tugrul-deck.git](https://github.com/Tugruleyolll/tugrul-deck.git)
 cd tugrul-deck
 2. Gerekli Kütüphaneleri Kurun
 Bash
