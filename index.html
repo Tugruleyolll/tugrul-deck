@@ -50,42 +50,112 @@
             transition: background 0.3s ease;
         }
 
-        /* Token Authentication Modal */
-        #authOverlay {
+        /* Modals (Auth & Settings) */
+        .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(4, 7, 13, 0.94);
+            background: rgba(4, 7, 13, 0.92);
             backdrop-filter: blur(14px);
             z-index: 9999;
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 18px;
+            padding: 16px;
         }
 
-        .auth-box {
+        .modal-box {
             width: 100%;
-            max-width: 360px;
-            background: rgba(17, 25, 40, 0.95);
-            border: 1px solid rgba(56, 189, 248, 0.4);
+            max-width: 390px;
+            max-height: 88dvh;
+            overflow-y: auto;
+            background: rgba(17, 25, 40, 0.96);
+            border: 1px solid rgba(56, 189, 248, 0.35);
             border-radius: 18px;
-            padding: 20px;
+            padding: 18px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+            gap: 14px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65);
         }
 
-        .auth-title {
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 10px;
+        }
+
+        .modal-title {
             font-size: 15px;
             font-weight: 800;
-            color: #38bdf8;
+            color: var(--hydro-blue);
         }
 
-        .auth-desc {
+        .close-modal-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: #e2e8f0;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .settings-section {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            background: rgba(7, 11, 20, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .settings-label {
             font-size: 12px;
+            font-weight: 800;
+            color: #cbd5e1;
+            letter-spacing: 0.3px;
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .switch-pill {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: #94a3b8;
-            line-height: 1.45;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .switch-pill.on {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+
+        .scene-field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .scene-field-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
         }
 
         .auth-input {
@@ -93,22 +163,39 @@
             background: #070b14;
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 10px;
-            padding: 10px 12px;
+            padding: 9px 11px;
             color: #ffffff;
-            font-size: 13px;
+            font-size: 12.5px;
             outline: none;
             user-select: text;
         }
 
-        .auth-btn {
-            background: linear-gradient(135deg, #38bdf8, #a855f7);
+        .auth-input:focus {
+            border-color: var(--hydro-blue);
+        }
+
+        .action-btn-full {
+            background: linear-gradient(135deg, var(--hydro-blue), var(--neon-purple));
             border: none;
             border-radius: 10px;
-            padding: 10px;
+            padding: 9px;
             color: #ffffff;
             font-weight: 800;
-            font-size: 13px;
+            font-size: 12.5px;
             cursor: pointer;
+            text-align: center;
+        }
+
+        .secondary-btn-full {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            padding: 8px;
+            color: #cbd5e1;
+            font-weight: 700;
+            font-size: 11.5px;
+            cursor: pointer;
+            text-align: center;
         }
 
         .auth-err {
@@ -121,20 +208,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 6px 10px;
+            padding: 6px 9px;
             background: var(--card-bg);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 13px;
             margin-bottom: 6px;
-            gap: 6px;
+            gap: 5px;
         }
 
         .brand {
             display: inline-block;
             font-weight: 800;
-            font-size: 12.5px;
-            letter-spacing: 1.2px;
+            font-size: 12px;
+            letter-spacing: 1px;
             background: linear-gradient(90deg, var(--hydro-blue), var(--neon-purple));
             -webkit-background-clip: text;
             background-clip: text;
@@ -179,7 +266,7 @@
         .header-badges {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .mini-stat-pill {
@@ -194,11 +281,25 @@
             white-space: nowrap;
         }
 
+        .gear-btn {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #e2e8f0;
+            border-radius: 7px;
+            padding: 2px 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .gear-btn:active {
+            transform: scale(0.9);
+        }
+
         .status-badge {
             display: flex;
             align-items: center;
             gap: 4px;
-            font-size: 10.5px;
+            font-size: 10px;
             font-weight: 700;
             color: #94a3b8;
             white-space: nowrap;
@@ -839,21 +940,76 @@
 <body>
 
     <!-- Token Pairing Overlay -->
-    <div id="authOverlay">
-        <div class="auth-box">
-            <div class="auth-title">🔐 Tuğrul Deck Eşleştirme</div>
-            <div class="auth-desc">
+    <div id="authOverlay" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title">🔐 Tuğrul Deck Eşleştirme</div>
+            </div>
+            <div style="font-size:12px; color:#94a3b8; line-height:1.45;">
                 Güvenlik doğrulaması için PC klasöründeki <b>deck_token.txt</b> dosyasında bulunan erişim anahtarını girin:
             </div>
             <input type="password" id="tokenInput" class="auth-input" placeholder="Erişim anahtarını yapıştırın...">
             <div class="auth-err" id="authErrText">Geçersiz erişim anahtarı! Tekrar deneyin.</div>
-            <button class="auth-btn" onclick="submitToken()">Bağlan ve Kaydet</button>
+            <button class="action-btn-full" onclick="submitToken()">Bağlan ve Kaydet</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal (Haptic Feedback + OBS Scene Mapping) -->
+    <div id="settingsModal" class="modal-overlay" onclick="if(event.target===this) closeSettings()">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title">⚙️ Ayarlar</div>
+                <button class="close-modal-btn" onclick="closeSettings()">✕</button>
+            </div>
+
+            <!-- 1. Haptic Feedback -->
+            <div class="settings-section">
+                <div class="settings-label">📳 Dokunma Geri Bildirimi</div>
+                <div class="toggle-row">
+                    <span>Titreşim Geri Bildirimi (Haptic)</span>
+                    <button class="switch-pill on" id="hapticToggleBtn" onclick="toggleHaptic()">AÇIK</button>
+                </div>
+            </div>
+
+            <!-- 2. OBS Scene Name Mapping -->
+            <div class="settings-section">
+                <div class="settings-label">🎥 OBS Sahne Adı Eşleştirme</div>
+                <div style="font-size:11px; color:#94a3b8; line-height:1.4;">
+                    OBS Studio içindeki sahne isimlerinizle birebir aynı olacak şekilde düzenleyin:
+                </div>
+
+                <div class="scene-field-group">
+                    <span class="scene-field-label">🚀 1. Sahne (Yayın Başlıyor)</span>
+                    <input type="text" id="sceneInput1" class="auth-input" placeholder="Yayın Başlıyor">
+                </div>
+
+                <div class="scene-field-group">
+                    <span class="scene-field-label">🎮 2. Sahne (Oyun Sahnesi)</span>
+                    <input type="text" id="sceneInput2" class="auth-input" placeholder="Sahne">
+                </div>
+
+                <div class="scene-field-group">
+                    <span class="scene-field-label">☕ 3. Sahne (Kısa Bir Mola)</span>
+                    <input type="text" id="sceneInput3" class="auth-input" placeholder="Mola">
+                </div>
+
+                <div class="scene-field-group">
+                    <span class="scene-field-label">💬 4. Sahne (Tam Ekran Sohbet)</span>
+                    <input type="text" id="sceneInput4" class="auth-input" placeholder="Sohbet">
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-top:4px;">
+                    <button class="secondary-btn-full" onclick="resetObsScenes()">Varsayılana Dön</button>
+                    <button class="action-btn-full" onclick="saveObsScenes()">Kaydet</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <header>
         <div class="brand">TUĞRUL DECK</div>
 
+        <!-- General / Stream Mode Switcher -->
         <div class="mode-switcher">
             <button class="mode-btn active-genel" id="modeGenelBtn" onclick="setDeckMode('genel')">🎛️ Genel</button>
             <button class="mode-btn" id="modeYayinBtn" onclick="setDeckMode('yayin')">🔴 Yayın</button>
@@ -865,6 +1021,7 @@
                 <span class="dot" id="statusDot"></span>
                 <span id="statusText">Bağlanıyor</span>
             </div>
+            <button class="gear-btn" onclick="openSettings()" title="Ayarlar">⚙️</button>
         </div>
     </header>
 
@@ -883,24 +1040,24 @@
     <!-- Stream Mode Top OBS Controls -->
     <div id="stream-obs-panel">
         <div class="stream-obs-grid">
-            <div class="btn theme-purple obs-scene-btn" data-scene="Yayın Başlıyor" onclick="sendCmd('obs_scene', 'Yayın Başlıyor')">
+            <div class="btn theme-purple obs-scene-btn" data-scene-slot="1" data-scene="Yayın Başlıyor" onclick="triggerObsSceneSlot(1)">
                 <span class="icon">🚀</span>
-                <span class="label">Yayın Başlıyor</span>
+                <span class="label obs-scene-label">Yayın Başlıyor</span>
             </div>
 
-            <div class="btn theme-kick obs-scene-btn" data-scene="Sahne" onclick="sendCmd('obs_scene', 'Sahne')">
+            <div class="btn theme-kick obs-scene-btn" data-scene-slot="2" data-scene="Sahne" onclick="triggerObsSceneSlot(2)">
                 <span class="icon">🎮</span>
-                <span class="label">Oyun Sahnesi</span>
+                <span class="label obs-scene-label">Oyun Sahnesi</span>
             </div>
 
-            <div class="btn theme-amber obs-scene-btn" data-scene="Mola" onclick="sendCmd('obs_scene', 'Mola')">
+            <div class="btn theme-amber obs-scene-btn" data-scene-slot="3" data-scene="Mola" onclick="triggerObsSceneSlot(3)">
                 <span class="icon">☕</span>
-                <span class="label">Kısa Bir Mola</span>
+                <span class="label obs-scene-label">Kısa Bir Mola</span>
             </div>
 
-            <div class="btn theme-hydro obs-scene-btn" data-scene="Sohbet" onclick="sendCmd('obs_scene', 'Sohbet')">
+            <div class="btn theme-hydro obs-scene-btn" data-scene-slot="4" data-scene="Sohbet" onclick="triggerObsSceneSlot(4)">
                 <span class="icon">💬</span>
-                <span class="label">Tam Ekran Sohbet</span>
+                <span class="label obs-scene-label">Tam Ekran Sohbet</span>
             </div>
 
             <div class="btn theme-yt obs-stream-btn" onclick="sendCmd('obs_toggle', 'stream')">
@@ -1031,24 +1188,24 @@
 
     <!-- TAB 2: OBS STUDIO CONTROLS -->
     <div id="tab-obs" class="deck-page">
-        <div class="btn theme-purple obs-scene-btn" data-scene="Yayın Başlıyor" onclick="sendCmd('obs_scene', 'Yayın Başlıyor')">
+        <div class="btn theme-purple obs-scene-btn" data-scene-slot="1" data-scene="Yayın Başlıyor" onclick="triggerObsSceneSlot(1)">
             <span class="icon">🚀</span>
-            <span class="label">Yayın Başlıyor</span>
+            <span class="label obs-scene-label">Yayın Başlıyor</span>
         </div>
 
-        <div class="btn theme-hydro obs-scene-btn" data-scene="Sahne" onclick="sendCmd('obs_scene', 'Sahne')">
+        <div class="btn theme-hydro obs-scene-btn" data-scene-slot="2" data-scene="Sahne" onclick="triggerObsSceneSlot(2)">
             <span class="icon">🎮</span>
-            <span class="label">Oyun Sahnesi</span>
+            <span class="label obs-scene-label">Oyun Sahnesi</span>
         </div>
 
-        <div class="btn theme-amber obs-scene-btn" data-scene="Mola" onclick="sendCmd('obs_scene', 'Mola')">
+        <div class="btn theme-amber obs-scene-btn" data-scene-slot="3" data-scene="Mola" onclick="triggerObsSceneSlot(3)">
             <span class="icon">☕</span>
-            <span class="label">Kısa Bir Mola</span>
+            <span class="label obs-scene-label">Kısa Bir Mola</span>
         </div>
 
-        <div class="btn theme-purple obs-scene-btn" data-scene="Sohbet" onclick="sendCmd('obs_scene', 'Sohbet')">
+        <div class="btn theme-purple obs-scene-btn" data-scene-slot="4" data-scene="Sohbet" onclick="triggerObsSceneSlot(4)">
             <span class="icon">💬</span>
-            <span class="label">Tam Ekran Sohbet</span>
+            <span class="label obs-scene-label">Tam Ekran Sohbet</span>
         </div>
 
         <div class="btn theme-yt obs-stream-btn" onclick="sendCmd('obs_toggle', 'stream')">
@@ -1201,9 +1358,28 @@
         let currentDeckMode = 'genel';
         let unreadChatCount = 0;
 
+        let hapticEnabled = localStorage.getItem('tugrul_deck_haptic') !== 'false';
+
+        const DEFAULT_OBS_SCENES = {
+            1: "Yayın Başlıyor",
+            2: "Sahne",
+            3: "Mola",
+            4: "Sohbet"
+        };
+
+        let obsScenes = Object.assign({}, DEFAULT_OBS_SCENES);
+        try {
+            const storedScenes = JSON.parse(localStorage.getItem('tugrul_deck_obs_scenes') || 'null');
+            if (storedScenes && typeof storedScenes === 'object') {
+                obsScenes = Object.assign({}, DEFAULT_OBS_SCENES, storedScenes);
+            }
+        } catch (e) {}
+
         const authOverlay = document.getElementById('authOverlay');
         const tokenInput = document.getElementById('tokenInput');
         const authErrText = document.getElementById('authErrText');
+        const settingsModal = document.getElementById('settingsModal');
+        const hapticToggleBtn = document.getElementById('hapticToggleBtn');
 
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
@@ -1256,6 +1432,83 @@
         brightSlider.addEventListener('touchstart', () => { isDraggingBright = true; });
         brightSlider.addEventListener('touchend', () => { setTimeout(() => { isDraggingBright = false; }, 300); });
 
+        function triggerVibrate(ms) {
+            if (hapticEnabled && navigator.vibrate) {
+                navigator.vibrate(ms);
+            }
+        }
+
+        // Settings Modal Functions
+        function openSettings() {
+            triggerVibrate(20);
+            updateHapticButton();
+            document.getElementById('sceneInput1').value = obsScenes[1];
+            document.getElementById('sceneInput2').value = obsScenes[2];
+            document.getElementById('sceneInput3').value = obsScenes[3];
+            document.getElementById('sceneInput4').value = obsScenes[4];
+            settingsModal.style.display = 'flex';
+        }
+
+        function closeSettings() {
+            settingsModal.style.display = 'none';
+        }
+
+        function toggleHaptic() {
+            hapticEnabled = !hapticEnabled;
+            localStorage.setItem('tugrul_deck_haptic', hapticEnabled);
+            if (hapticEnabled) triggerVibrate(30);
+            updateHapticButton();
+        }
+
+        function updateHapticButton() {
+            if (hapticEnabled) {
+                hapticToggleBtn.textContent = 'AÇIK';
+                hapticToggleBtn.classList.add('on');
+            } else {
+                hapticToggleBtn.textContent = 'KAPALI';
+                hapticToggleBtn.classList.remove('on');
+            }
+        }
+
+        function applyObsSceneNamesToUI() {
+            document.querySelectorAll('.obs-scene-btn').forEach(btn => {
+                const slot = Number(btn.dataset.sceneSlot);
+                const sceneName = obsScenes[slot] || DEFAULT_OBS_SCENES[slot];
+                btn.dataset.scene = sceneName;
+                const labelEl = btn.querySelector('.obs-scene-label');
+                if (labelEl) {
+                    labelEl.textContent = sceneName;
+                }
+            });
+        }
+
+        function saveObsScenes() {
+            triggerVibrate(30);
+            obsScenes[1] = document.getElementById('sceneInput1').value.trim() || DEFAULT_OBS_SCENES[1];
+            obsScenes[2] = document.getElementById('sceneInput2').value.trim() || DEFAULT_OBS_SCENES[2];
+            obsScenes[3] = document.getElementById('sceneInput3').value.trim() || DEFAULT_OBS_SCENES[3];
+            obsScenes[4] = document.getElementById('sceneInput4').value.trim() || DEFAULT_OBS_SCENES[4];
+            localStorage.setItem('tugrul_deck_obs_scenes', JSON.stringify(obsScenes));
+            applyObsSceneNamesToUI();
+            closeSettings();
+        }
+
+        function resetObsScenes() {
+            triggerVibrate(25);
+            obsScenes = Object.assign({}, DEFAULT_OBS_SCENES);
+            localStorage.setItem('tugrul_deck_obs_scenes', JSON.stringify(obsScenes));
+            document.getElementById('sceneInput1').value = obsScenes[1];
+            document.getElementById('sceneInput2').value = obsScenes[2];
+            document.getElementById('sceneInput3').value = obsScenes[3];
+            document.getElementById('sceneInput4').value = obsScenes[4];
+            applyObsSceneNamesToUI();
+        }
+
+        function triggerObsSceneSlot(slot) {
+            const targetScene = obsScenes[slot] || DEFAULT_OBS_SCENES[slot];
+            sendCmd('obs_scene', targetScene);
+        }
+
         function submitToken() {
             const val = tokenInput.value.trim();
             if (!val) return;
@@ -1270,7 +1523,7 @@
 
         function setDeckMode(mode) {
             try {
-                if (navigator.vibrate) navigator.vibrate(20);
+                triggerVibrate(20);
                 currentDeckMode = mode;
                 localStorage.setItem('tugrul_deck_mode', mode);
 
@@ -1301,7 +1554,6 @@
             return /^#[0-9a-fA-F]{3,8}$/.test(String(rawColor || '')) ? rawColor : '#53fc18';
         }
 
-        // Build chat message DOM nodes safely without unescaped attribute interpolation
         function appendChatMessage(msg, isHistory = false) {
             const empty = chatMessagesBox.querySelector('.chat-empty');
             if (empty) empty.remove();
@@ -1515,7 +1767,7 @@
         }
 
         function switchTab(tabName, btnElement) {
-            if (navigator.vibrate) navigator.vibrate(20);
+            triggerVibrate(20);
             currentTab = tabName;
 
             if (tabName !== 'sistem' && livePeekInterval) {
@@ -1538,8 +1790,8 @@
         }
 
         function sendCmd(action, value) {
-            if (navigator.vibrate && action !== 'set_volume' && action !== 'set_brightness' && action !== 'get_screen') {
-                navigator.vibrate(35);
+            if (action !== 'set_volume' && action !== 'set_brightness' && action !== 'get_screen') {
+                triggerVibrate(35);
             }
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({ action: action, value: value }));
@@ -1616,6 +1868,8 @@
                 setTimeout(connect, 2000);
             };
         }
+
+        applyObsSceneNamesToUI();
 
         const savedMode = localStorage.getItem('tugrul_deck_mode');
         if (savedMode === 'yayin') {

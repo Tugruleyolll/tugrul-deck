@@ -34,7 +34,6 @@ if sys.stdout is None:
 if sys.stderr is None:
   sys.stderr = sys.stdout
 
-# Keep PyAutoGUI failsafe enabled (move mouse to top-left corner to abort)
 pyautogui.FAILSAFE = True
 
 # --- SECURITY CONFIGURATION & ALLOWLISTS ---
@@ -91,16 +90,6 @@ ALLOWED_HOTKEYS = {
 }
 
 ALLOWED_PRESS_KEYS = {"f14", "playpause", "nexttrack", "prevtrack"}
-ALLOWED_OBS_SCENES = {
-    "Starting Soon",
-    "Gameplay",
-    "BRB",
-    "Just Chatting",
-    "Yayın Başlıyor",
-    "Sahne",
-    "Mola",
-    "Sohbet",
-}
 
 AUTHENTICATED_CLIENTS = set()
 HELPER_PATH = os.path.join(BASE_DIR, "media_helper.py")
@@ -343,6 +332,14 @@ def get_obs_state():
     }
 
 
+def is_valid_scene_name(name):
+  return (
+      isinstance(name, str)
+      and 1 <= len(name.strip()) <= 64
+      and all(ch.isprintable() for ch in name)
+  )
+
+
 def handle_obs(command_type, value):
   if not is_obs_port_open():
     return
@@ -350,8 +347,8 @@ def handle_obs(command_type, value):
     cl = obs.ReqClient(
         host="127.0.0.1", port=4455, password=OBS_PASSWORD, timeout=2
     )
-    if command_type == "scene" and value in ALLOWED_OBS_SCENES:
-      cl.set_current_program_scene(value)
+    if command_type == "scene" and is_valid_scene_name(value):
+      cl.set_current_program_scene(value.strip())
     elif command_type == "stream":
       cl.toggle_stream()
     elif command_type == "record":
@@ -578,7 +575,7 @@ async def kick_chat_listener():
       await asyncio.sleep(2.5)
 
 
-# --- 7. HARDENED STATIC HTTP SERVER (ALLOWLIST + SECURITY HEADERS) ---
+# --- 7. HARDENED STATIC HTTP SERVER ---
 class HardenedHTTPRequestHandler(SimpleHTTPRequestHandler):
 
   def do_GET(self):
@@ -731,7 +728,6 @@ async def handle_command(websocket):
       action = data.get("action")
       value = data.get("value")
 
-      # Step 1: Mandatory Token Authentication
       if not authenticated:
         if action == "auth" and isinstance(value, str):
           if secrets.compare_digest(value.strip(), ACCESS_TOKEN):
@@ -758,7 +754,6 @@ async def handle_command(websocket):
         await websocket.close(1008, "Authentication failed")
         return
 
-      # Step 2: Strict Allowlisted Command Execution
       if action == "set_volume" and isinstance(value, (int, float)):
         vol_val = max(0, min(100, int(value)))
         set_system_volume(vol_val)
@@ -772,11 +767,7 @@ async def handle_command(websocket):
         bright_val = max(0, min(100, int(value)))
         await asyncio.to_thread(set_system_brightness, bright_val)
 
-      elif (
-          action == "obs_scene"
-          and isinstance(value, str)
-          and value in ALLOWED_OBS_SCENES
-      ):
+      elif action == "obs_scene" and is_valid_scene_name(value):
         await asyncio.to_thread(handle_obs, "scene", value)
         await asyncio.sleep(0.15)
         await broadcast(await asyncio.to_thread(get_obs_state))
