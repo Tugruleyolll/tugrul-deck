@@ -3,3 +3,4 @@ __pycache__/
 deck.log
 venv/
 .env
+deck_token.txt
