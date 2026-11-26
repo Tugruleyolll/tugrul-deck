@@ -41,8 +41,9 @@ tugrul-deck/
 ├── deck_durdur.bat      # Arka plan servisini sonlandırıcı
 ├── requirements.txt     # Gerekli Python kütüphaneleri
 └── README.md            # Proje dokümantasyonu
-
-🚀 Kurulum ve Kullanım
+```
+## 🚀 Kurulum ve Kullanım
+```text
 1. Depoyu Klonlayın
 Bash
 git clone [https://github.com/Tugruleyolll/tugrul-deck.git](https://github.com/Tugruleyolll/tugrul-deck.git)
@@ -67,3 +68,4 @@ Bilgisayarınızla aynı Wi-Fi ağına bağlı telefonunuzun tarayıcısından �
 Plaintext
 http://<BILGISAYAR_YEREL_IP_ADRESI>:8000
 Tarayıcı menüsünden "Ana ekrana ekle" seçeneğini kullanarak tam ekran uygulama deneyimi elde edebilirsiniz.
+```

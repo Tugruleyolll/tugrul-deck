@@ -1,6 +1,6 @@
 __pycache__/
 *.pyc
 deck.log
+deck_token.txt
 venv/
 .env
-deck_token.txt
