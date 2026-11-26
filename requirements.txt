@@ -1,0 +1,8 @@
+websockets
+pycaw
+comtypes
+obsws-python
+screen-brightness-control
+pyautogui
+Pillow
+psutil

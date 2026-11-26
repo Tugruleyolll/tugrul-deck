@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tugrul Deck</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --bg-dark: #070b14;
+            --bg-glow-1: rgba(56, 189, 248, 0.15);
+            --bg-glow-2: rgba(168, 85, 247, 0.15);
+            --card-bg: rgba(17, 25, 40, 0.78);
+            --hydro-blue: #38bdf8;
+            --neon-purple: #a855f7;
+            --kick-green: #53fc18;
+            --yt-red: #ff0033;
+            --discord-blurple: #5865F2;
+            --amber: #f59e0b;
+        }
+
+        body.stream-theme {
+            --bg-dark: #04070d;
+            --bg-glow-1: rgba(83, 252, 24, 0.14);
+            --bg-glow-2: rgba(255, 0, 51, 0.10);
+            --card-bg: rgba(12, 20, 32, 0.88);
+            --hydro-blue: #53fc18;
+            --neon-purple: #22c55e;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 15%, var(--bg-glow-1) 0%, transparent 42%),
+                radial-gradient(circle at 85% 85%, var(--bg-glow-2) 0%, transparent 42%);
+            color: #f8fafc;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 9px;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background 0.3s ease;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 13px;
+            margin-bottom: 6px;
+            gap: 6px;
+        }
+
+        .brand {
+            display: inline-block;
+            font-weight: 800;
+            font-size: 12.5px;
+            letter-spacing: 1.2px;
+            background: linear-gradient(90deg, var(--hydro-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            white-space: nowrap;
+        }
+
+        .mode-switcher {
+            display: flex;
+            background: rgba(5, 9, 18, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 9px;
+            padding: 2px;
+            gap: 2px;
+        }
+
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 7px;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .mode-btn.active-genel {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.28), rgba(168, 85, 247, 0.28));
+            color: #ffffff;
+        }
+
+        .mode-btn.active-yayin {
+            background: rgba(83, 252, 24, 0.22);
+            color: var(--kick-green);
+            border: 1px solid rgba(83, 252, 24, 0.45);
+        }
+
+        .header-badges {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mini-stat-pill {
+            font-size: 9.5px;
+            font-weight: 700;
+            color: #94a3b8;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px 5px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10.5px;
+            font-weight: 700;
+            color: #94a3b8;
+            white-space: nowrap;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .dot.connected {
+            background-color: #22c55e;
+            box-shadow: 0 0 10px #22c55e;
+        }
+
+        .dot.live {
+            background-color: #ff0033;
+            box-shadow: 0 0 12px #ff0033;
+            animation: livePulse 1.2s infinite ease-in-out;
+        }
+
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.45; transform: scale(1.25); }
+        }
+
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 3px;
+            border-radius: 11px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 7px;
+        }
+
+        .tab-btn {
+            position: relative;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 6px 2px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(168, 85, 247, 0.2));
+            color: #ffffff;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+        }
+
+        .unread-badge {
+            display: none;
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: var(--kick-green);
+            color: #05080f;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 1px 4px;
+            border-radius: 6px;
+        }
+
+        .deck-page {
+            flex: 1;
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 7px;
+            min-height: 0;
+        }
+
+        .deck-page.active {
+            display: grid;
+        }
+
+        #tab-genel {
+            grid-template-rows: auto auto auto repeat(3, 1fr);
+        }
+
+        #tab-sistem {
+            grid-template-rows: auto auto auto 1fr 1fr;
+        }
+
+        #tab-chat {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        #tab-chat.active {
+            display: flex;
+        }
+
+        /* YAYIN MODU ÖZEL ALANI */
+        #stream-obs-panel {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 7px;
+            flex-shrink: 0;
+        }
+
+        body.stream-theme #stream-obs-panel {
+            display: flex;
+        }
+
+        body.stream-theme #normalTabsBar {
+            display: none;
+        }
+
+        .stream-obs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 58px);
+            gap: 6px;
+        }
+
+        .stream-quick-strip {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 6px;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid rgba(83, 252, 24, 0.25);
+            border-radius: 11px;
+            padding: 5px 9px;
+        }
+
+        .strip-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+
+        /* SES VE PARLAKLIK WIDGETLARI */
+        .slider-card {
+            grid-column: span 3;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 13px;
+            padding: 6px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .slider-card.brightness-card {
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slider-title {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+
+        .mute-toggle {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: var(--hydro-blue);
+            border-radius: 7px;
+            padding: 1px 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .mute-toggle.muted {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .slider-percent {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--hydro-blue);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .slider-percent.muted {
+            color: #ef4444;
+        }
+
+        .slider-percent.amber {
+            color: var(--amber);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 5px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 3px solid var(--hydro-blue);
+            cursor: pointer;
+        }
+
+        input[type="range"].amber-slider::-webkit-slider-thumb {
+            border-color: var(--amber);
+        }
+
+        /* MÜZİK WIDGET */
+        .music-widget {
+            grid-column: span 3;
+            background: linear-gradient(135deg, rgba(17, 25, 40, 0.85), rgba(30, 27, 75, 0.75));
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            border-radius: 13px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .music-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .eq-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(168, 85, 247, 0.15);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 2px;
+            padding: 6px 5px;
+            flex-shrink: 0;
+        }
+
+        .eq-bar {
+            width: 3px;
+            height: 4px;
+            background: linear-gradient(to top, var(--hydro-blue), var(--neon-purple));
+            border-radius: 2px;
+        }
+
+        .music-widget.playing .eq-bar:nth-child(1) { animation: eqBounce 0.7s infinite ease-in-out alternate; }
+        .music-widget.playing .eq-bar:nth-child(2) { animation: eqBounce 0.5s infinite ease-in-out alternate 0.2s; }
+        .music-widget.playing .eq-bar:nth-child(3) { animation: eqBounce 0.8s infinite ease-in-out alternate 0.1s; }
+        .music-widget.playing .eq-bar:nth-child(4) { animation: eqBounce 0.6s infinite ease-in-out alternate 0.3s; }
+
+        @keyframes eqBounce {
+            0% { height: 4px; }
+            100% { height: 14px; }
+        }
+
+        .track-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            min-width: 0;
+        }
+
+        .track-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-artist {
+            font-size: 10px;
+            font-weight: 500;
+            color: #94a3b8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .m-btn {
+            width: 29px;
+            height: 29px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .m-btn:active {
+            transform: scale(0.88);
+        }
+
+        .m-btn.play-main {
+            width: 33px;
+            height: 33px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--hydro-blue), var(--neon-purple));
+            border: none;
+            color: #ffffff;
+        }
+
+        /* KICK CHAT PANELİ */
+        .chat-header-bar {
+            background: var(--card-bg);
+            border: 1px solid rgba(83, 252, 24, 0.3);
+            border-radius: 13px;
+            padding: 7px 11px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .chat-channel-info {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--kick-green);
+        }
+
+        .chat-messages-box {
+            flex: 1;
+            background: rgba(10, 15, 26, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 9px 11px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            user-select: text;
+            min-height: 0;
+        }
+
+        .chat-empty {
+            margin: auto;
+            text-align: center;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .chat-line {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 2.5px solid var(--user-color, #53fc18);
+            border-radius: 6px;
+            padding: 6px 9px;
+            font-size: 13px;
+            line-height: 1.35;
+            word-break: break-word;
+        }
+
+        .chat-time {
+            font-size: 10px;
+            color: #64748b;
+            margin-right: 5px;
+        }
+
+        .chat-badge {
+            display: inline-block;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 1px 4px;
+            border-radius: 4px;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+
+        .badge-broadcaster { background: #ff0033; color: #fff; }
+        .badge-moderator { background: #22c55e; color: #05080f; }
+        .badge-subscriber { background: #a855f7; color: #fff; }
+
+        .chat-user {
+            font-weight: 800;
+            color: var(--user-color, #53fc18);
+            margin-right: 5px;
+        }
+
+        .chat-text {
+            color: #f1f5f9;
+        }
+
+        /* LIVE PEEK & DONANIM MONİTÖRÜ */
+        .screen-card {
+            grid-column: span 3;
+            background: var(--card-bg);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 14px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .screen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .screen-title {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+
+        .screen-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .mini-pill {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: var(--hydro-blue);
+            border-radius: 7px;
+            padding: 3px 9px;
+            font-size: 10.5px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .mini-pill.streaming {
+            background: rgba(255, 0, 51, 0.25);
+            border-color: #ff0033;
+            color: #ff0033;
+        }
+
+        .screen-box {
+            width: 100%;
+            aspect-ratio: 16 / 8.2;
+            background: #03060c;
+            border-radius: 9px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screen-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        .screen-placeholder {
+            font-size: 11.5px;
+            color: #64748b;
+            text-align: center;
+            padding: 8px;
+        }
+
+        .stats-card {
+            grid-column: span 3;
+            background: var(--card-bg);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 13px;
+            padding: 8px 11px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-col {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #cbd5e1;
+        }
+
+        .stat-val {
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 6px;
+            transition: width 0.4s ease, background-color 0.4s ease;
+        }
+
+        .timer-banner {
+            grid-column: span 3;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            border-radius: 11px;
+            padding: 6px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #fbbf24;
+        }
+
+        .timer-banner.inactive {
+            background: rgba(15, 23, 42, 0.5);
+            border-color: rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+        }
+
+        /* BUTONLAR */
+        .btn {
+            position: relative;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            padding: 4px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            right: 20%;
+            height: 2px;
+            background: var(--btn-color, var(--hydro-blue));
+            box-shadow: 0 0 12px var(--btn-color, var(--hydro-blue));
+            border-radius: 0 0 4px 4px;
+            opacity: 0.85;
+        }
+
+        .btn:active {
+            transform: scale(0.92);
+        }
+
+        .btn.scene-active {
+            background: linear-gradient(135deg, rgba(83, 252, 24, 0.22), rgba(56, 189, 248, 0.22));
+            border: 1.5px solid var(--hydro-blue);
+        }
+
+        .btn.on-air {
+            background: linear-gradient(135deg, rgba(255, 0, 51, 0.35), rgba(153, 27, 27, 0.45));
+            border: 1.5px solid #ff0033;
+        }
+
+        .icon {
+            font-size: 19px;
+        }
+
+        .label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #e2e8f0;
+            text-align: center;
+            line-height: 1.15;
+        }
+
+        .theme-hydro { --btn-color: #38bdf8; }
+        .theme-purple { --btn-color: #a855f7; }
+        .theme-kick { --btn-color: #53fc18; }
+        .theme-yt { --btn-color: #ff0033; }
+        .theme-discord { --btn-color: #5865F2; }
+        .theme-amber { --btn-color: #f59e0b; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">TUĞRUL DECK</div>
+
+        <div class="mode-switcher">
+            <button class="mode-btn active-genel" id="modeGenelBtn" onclick="setDeckMode('genel')">🎛️ Genel</button>
+            <button class="mode-btn" id="modeYayinBtn" onclick="setDeckMode('yayin')">🔴 Yayın</button>
+        </div>
+
+        <div class="header-badges">
+            <div class="mini-stat-pill" id="headerStatsPill">CPU --%</div>
+            <div class="status-badge">
+                <span class="dot" id="statusDot"></span>
+                <span id="statusText">Bağlanıyor</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- GENEL MOD SEKMELERİ -->
+    <div class="tabs" id="normalTabsBar">
+        <button class="tab-btn active" id="btnTabGenel" onclick="switchTab('genel', this)">🎛️ Genel</button>
+        <button class="tab-btn" id="btnTabObs" onclick="switchTab('obs', this)">🎥 OBS</button>
+        <button class="tab-btn" id="btnTabChat" onclick="switchTab('chat', this)">
+            💬 Chat
+            <span class="unread-badge" id="chatUnreadBadge">0</span>
+        </button>
+        <button class="tab-btn" id="btnTabHesaplar" onclick="switchTab('hesaplar', this)">🌐 Hesaplar</button>
+        <button class="tab-btn" id="btnTabSistem" onclick="switchTab('sistem', this)">👁️ Ekran</button>
+    </div>
+
+    <!-- YAYIN MODU ÜST PANELİ (SADECE YAYIN MODUNDA GÖRÜNÜR) -->
+    <div id="stream-obs-panel">
+        <div class="stream-obs-grid">
+            <div class="btn theme-purple obs-scene-btn" data-scene="Yayın Başlıyor" onclick="sendCmd('obs_scene', 'Yayın Başlıyor')">
+                <span class="icon">🚀</span>
+                <span class="label">Yayın Başlıyor</span>
+            </div>
+
+            <div class="btn theme-kick obs-scene-btn" data-scene="Sahne" onclick="sendCmd('obs_scene', 'Sahne')">
+                <span class="icon">🎮</span>
+                <span class="label">Oyun Sahnesi</span>
+            </div>
+
+            <div class="btn theme-amber obs-scene-btn" data-scene="Mola" onclick="sendCmd('obs_scene', 'Mola')">
+                <span class="icon">☕</span>
+                <span class="label">Kısa Bir Mola</span>
+            </div>
+
+            <div class="btn theme-hydro obs-scene-btn" data-scene="Sohbet" onclick="sendCmd('obs_scene', 'Sohbet')">
+                <span class="icon">💬</span>
+                <span class="label">Tam Ekran Sohbet</span>
+            </div>
+
+            <div class="btn theme-yt obs-stream-btn" onclick="sendCmd('obs_toggle', 'stream')">
+                <span class="icon obs-stream-icon">📡</span>
+                <span class="label obs-stream-label">Yayın Başlat</span>
+            </div>
+
+            <div class="btn theme-yt obs-record-btn" onclick="sendCmd('obs_toggle', 'record')">
+                <span class="icon obs-record-icon">⏺️</span>
+                <span class="label obs-record-label">Kayıt Başlat</span>
+            </div>
+        </div>
+
+        <div class="stream-quick-strip">
+            <div class="strip-item" onclick="sendCmd('press', 'f14')" style="cursor:pointer;">
+                <span style="font-size:15px;">🎙️</span>
+                <span>Mic Sustur (F14)</span>
+            </div>
+            <div class="strip-item">
+                <button class="mute-toggle" id="streamMuteBtn" onclick="sendCmd('toggle_mute', null)">🔊</button>
+                <span id="streamVolText" style="color:var(--kick-green);">%--</span>
+            </div>
+            <div class="status-badge">
+                <span class="dot" id="streamObsDot"></span>
+                <span id="streamObsText">OBS</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. SEKME: GENEL -->
+    <div id="tab-genel" class="deck-page active">
+        <div class="slider-card">
+            <div class="slider-header">
+                <div class="slider-title">
+                    <button class="mute-toggle" id="muteBtn" onclick="sendCmd('toggle_mute', null)">🔊</button>
+                    <span>Sistem Sesi</span>
+                </div>
+                <div class="slider-percent" id="volPercent">%--</div>
+            </div>
+            <input type="range" id="volSlider" min="0" max="100" value="50" oninput="onSliderInput(this.value)">
+        </div>
+
+        <div class="slider-card brightness-card" id="brightnessCard">
+            <div class="slider-header">
+                <div class="slider-title">
+                    <span style="font-size:13px;">☀️</span>
+                    <span>Ekran Parlaklığı</span>
+                </div>
+                <div class="slider-percent amber" id="brightPercent">%--</div>
+            </div>
+            <input type="range" class="amber-slider" id="brightSlider" min="0" max="100" value="80" oninput="onBrightnessInput(this.value)">
+        </div>
+
+        <div class="music-widget" id="musicWidget">
+            <div class="music-left">
+                <div class="eq-box">
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                </div>
+                <div class="track-info">
+                    <div class="track-title" id="trackTitle">Şu an bir şey çalmıyor</div>
+                    <div class="track-artist" id="trackArtist">Opera • YouTube Music</div>
+                </div>
+            </div>
+
+            <div class="music-controls">
+                <button class="m-btn" onclick="sendCmd('press', 'prevtrack')" title="Önceki">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                </button>
+
+                <button class="m-btn play-main" id="playPauseBtn" onclick="sendCmd('press', 'playpause')" title="Oynat / Duraklat">
+                    <svg id="playIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+
+                <button class="m-btn" onclick="sendCmd('press', 'nexttrack')" title="Sonraki">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="btn theme-discord" onclick="sendCmd('press', 'f14')">
+            <span class="icon">🎙️</span>
+            <span class="label">Mic Sustur</span>
+        </div>
+
+        <div class="btn theme-amber" onclick="sendCmd('app', 'ms-screenclip:')">
+            <span class="icon">📸</span>
+            <span class="label">Ekran Alıntısı</span>
+        </div>
+
+        <div class="btn theme-purple" onclick="sendCmd('hotkey', ['win', 'd'])">
+            <span class="icon">🖥️</span>
+            <span class="label">Masaüstü</span>
+        </div>
+
+        <div class="btn theme-discord" onclick="sendCmd('app', 'discord://')">
+            <span class="icon">💬</span>
+            <span class="label">Discord</span>
+        </div>
+
+        <div class="btn theme-hydro" onclick="sendCmd('app', 'code')">
+            <span class="icon">⚡</span>
+            <span class="label">VS Code</span>
+        </div>
+
+        <div class="btn theme-hydro" onclick="sendCmd('app', 'genshin')">
+            <span class="icon">✨</span>
+            <span class="label">Genshin Impact</span>
+        </div>
+
+        <div class="btn theme-amber" onclick="sendCmd('hotkey', ['ctrl', 'shift', 'esc'])">
+            <span class="icon">📊</span>
+            <span class="label">Görev Yön.</span>
+        </div>
+
+        <div class="btn theme-purple" onclick="sendCmd('hotkey', ['win', 'e'])">
+            <span class="icon">📁</span>
+            <span class="label">Dosyalar</span>
+        </div>
+
+        <div class="btn theme-yt" onclick="sendCmd('hotkey', ['win', 'l'])">
+            <span class="icon">🔒</span>
+            <span class="label">PC Kilitle</span>
+        </div>
+    </div>
+
+    <!-- 2. SEKME: OBS -->
+    <div id="tab-obs" class="deck-page">
+        <div class="btn theme-purple obs-scene-btn" data-scene="Yayın Başlıyor" onclick="sendCmd('obs_scene', 'Yayın Başlıyor')">
+            <span class="icon">🚀</span>
+            <span class="label">Yayın Başlıyor</span>
+        </div>
+
+        <div class="btn theme-hydro obs-scene-btn" data-scene="Sahne" onclick="sendCmd('obs_scene', 'Sahne')">
+            <span class="icon">🎮</span>
+            <span class="label">Oyun Sahnesi</span>
+        </div>
+
+        <div class="btn theme-amber obs-scene-btn" data-scene="Mola" onclick="sendCmd('obs_scene', 'Mola')">
+            <span class="icon">☕</span>
+            <span class="label">Kısa Bir Mola</span>
+        </div>
+
+        <div class="btn theme-purple obs-scene-btn" data-scene="Sohbet" onclick="sendCmd('obs_scene', 'Sohbet')">
+            <span class="icon">💬</span>
+            <span class="label">Tam Ekran Sohbet</span>
+        </div>
+
+        <div class="btn theme-yt obs-stream-btn" onclick="sendCmd('obs_toggle', 'stream')">
+            <span class="icon obs-stream-icon">📡</span>
+            <span class="label obs-stream-label">Yayın Başlat</span>
+        </div>
+
+        <div class="btn theme-yt obs-record-btn" onclick="sendCmd('obs_toggle', 'record')">
+            <span class="icon obs-record-icon">⏺️</span>
+            <span class="label obs-record-label">Kayıt Başlat</span>
+        </div>
+    </div>
+
+    <!-- 3. SEKME: CANLI KICK CHAT (YAYIN MODUNDA ALTTA OTOMATİK AÇIK KALIR) -->
+    <div id="tab-chat" class="deck-page">
+        <div class="chat-header-bar">
+            <div class="chat-channel-info">
+                <span class="dot" id="kickChatDot"></span>
+                <span id="kickChatStatus">kick.com/tugruleyolll</span>
+            </div>
+            <div style="display:flex; gap:6px;">
+                <button class="mini-pill" style="border-color:rgba(83,252,24,0.4); color:#53fc18;" onclick="sendCmd('app', 'https://kick.com/popout/tugruleyolll/chat')">PC'de Aç</button>
+                <button class="mini-pill" style="border-color:rgba(239,68,68,0.4); color:#ef4444;" onclick="sendCmd('clear_chat', null)">Temizle</button>
+            </div>
+        </div>
+
+        <div class="chat-messages-box" id="chatMessagesBox">
+            <div class="chat-empty" id="chatEmptyState">
+                🟢 Kick sohbet odasına bağlanıldı.<br>
+                Kanalına gelen mesajlar anlık olarak burada akacak.
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. SEKME: HESAPLAR -->
+    <div id="tab-hesaplar" class="deck-page">
+        <div class="btn theme-kick" onclick="sendCmd('app', 'https://kick.com/tugruleyolll')">
+            <span class="icon">🟢</span>
+            <span class="label">Kick Kanalım</span>
+        </div>
+
+        <div class="btn theme-kick" onclick="sendCmd('app', 'https://dashboard.kick.com')">
+            <span class="icon">📊</span>
+            <span class="label">Kick Panel</span>
+        </div>
+
+        <div class="btn theme-yt" onclick="sendCmd('app', 'https://youtube.com/@Tugruleyolll')">
+            <span class="icon">▶️</span>
+            <span class="label">YouTube Kanalım</span>
+        </div>
+
+        <div class="btn theme-yt" onclick="sendCmd('app', 'https://studio.youtube.com')">
+            <span class="icon">🎬</span>
+            <span class="label">YT Studio</span>
+        </div>
+
+        <div class="btn theme-purple" onclick="sendCmd('app', 'https://github.com/tugrul565')">
+            <span class="icon">💻</span>
+            <span class="label">GitHub</span>
+        </div>
+
+        <div class="btn theme-hydro" onclick="sendCmd('app', 'https://music.youtube.com')">
+            <span class="icon">🎵</span>
+            <span class="label">YT Music</span>
+        </div>
+    </div>
+
+    <!-- 5. SEKME: EKRAN & DONANIM -->
+    <div id="tab-sistem" class="deck-page">
+        <div class="screen-card">
+            <div class="screen-header">
+                <span class="screen-title">👁️ PC Ekran Önizleme</span>
+                <div class="screen-actions">
+                    <button class="mini-pill" onclick="sendCmd('get_screen', null)">🔄 Yenile</button>
+                    <button class="mini-pill" id="liveStreamBtn" onclick="toggleLivePeek()">▶️ Canlı İzle</button>
+                </div>
+            </div>
+            <div class="screen-box" onclick="sendCmd('get_screen', null)">
+                <img id="screenPreviewImg" alt="PC Ekranı">
+                <div class="screen-placeholder" id="screenPlaceholder">
+                    Görüntü almak için "Yenile"ye veya<br>"Canlı İzle"ye dokun
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stat-col">
+                <div class="stat-top">
+                    <span>⚡ CPU Yükü</span>
+                    <span class="stat-val" id="cpuValText" style="color:#38bdf8;">%0</span>
+                </div>
+                <div class="stat-bar-bg">
+                    <div class="stat-bar-fill" id="cpuBarFill" style="background:#38bdf8;"></div>
+                </div>
+            </div>
+            <div class="stat-col">
+                <div class="stat-top">
+                    <span>🧠 RAM</span>
+                    <span class="stat-val" id="ramValText" style="color:#a855f7;">0 / 0 GB</span>
+                </div>
+                <div class="stat-bar-bg">
+                    <div class="stat-bar-fill" id="ramBarFill" style="background:#a855f7;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="timer-banner inactive" id="timerBanner">
+            <span id="timerText">⏱️ Aktif kapatma sayacı yok</span>
+            <button class="mini-pill" id="cancelTimerBtn" style="display:none; border-color:#ef4444; color:#ef4444;" onclick="sendCmd('power', {cmd: 'cancel_shutdown'})">İptal Et</button>
+        </div>
+
+        <div class="btn theme-amber" onclick="sendCmd('power', {cmd: 'schedule_shutdown', minutes: 30})">
+            <span class="icon">⏳</span>
+            <span class="label">30 Dk Sonra Kapat</span>
+        </div>
+
+        <div class="btn theme-amber" onclick="sendCmd('power', {cmd: 'schedule_shutdown', minutes: 60})">
+            <span class="icon">⏰</span>
+            <span class="label">1 Saat Sonra Kapat</span>
+        </div>
+
+        <div class="btn theme-purple" onclick="sendCmd('power', {cmd: 'schedule_shutdown', minutes: 120})">
+            <span class="icon">🌙</span>
+            <span class="label">2 Saat Sonra Kapat</span>
+        </div>
+
+        <div class="btn theme-hydro" onclick="sendCmd('power', {cmd: 'sleep_now'})">
+            <span class="icon">💤</span>
+            <span class="label">Hemen Uyut</span>
+        </div>
+
+        <div class="btn theme-yt" onclick="sendCmd('power', {cmd: 'cancel_shutdown'})">
+            <span class="icon">🛑</span>
+            <span class="label">Sayacı İptal Et</span>
+        </div>
+
+        <div class="btn theme-discord" onclick="sendCmd('hotkey', ['win', 'l'])">
+            <span class="icon">🔒</span>
+            <span class="label">Ekranı Kilitle</span>
+        </div>
+    </div>
+
+    <script>
+        const PC_IP = window.location.hostname; 
+        let ws = null;
+        let isDraggingSlider = false;
+        let isDraggingBright = false;
+        let livePeekInterval = null;
+        let currentTab = 'genel';
+        let currentDeckMode = 'genel';
+        let unreadChatCount = 0;
+
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const headerStatsPill = document.getElementById('headerStatsPill');
+
+        const modeGenelBtn = document.getElementById('modeGenelBtn');
+        const modeYayinBtn = document.getElementById('modeYayinBtn');
+
+        const volSlider = document.getElementById('volSlider');
+        const volPercent = document.getElementById('volPercent');
+        const muteBtn = document.getElementById('muteBtn');
+        const streamMuteBtn = document.getElementById('streamMuteBtn');
+        const streamVolText = document.getElementById('streamVolText');
+
+        const brightSlider = document.getElementById('brightSlider');
+        const brightPercent = document.getElementById('brightPercent');
+
+        const cpuValText = document.getElementById('cpuValText');
+        const cpuBarFill = document.getElementById('cpuBarFill');
+        const ramValText = document.getElementById('ramValText');
+        const ramBarFill = document.getElementById('ramBarFill');
+
+        const musicWidget = document.getElementById('musicWidget');
+        const trackTitle = document.getElementById('trackTitle');
+        const trackArtist = document.getElementById('trackArtist');
+        const playIcon = document.getElementById('playIcon');
+
+        const streamObsDot = document.getElementById('streamObsDot');
+        const streamObsText = document.getElementById('streamObsText');
+
+        const screenPreviewImg = document.getElementById('screenPreviewImg');
+        const screenPlaceholder = document.getElementById('screenPlaceholder');
+        const liveStreamBtn = document.getElementById('liveStreamBtn');
+
+        const timerBanner = document.getElementById('timerBanner');
+        const timerText = document.getElementById('timerText');
+        const cancelTimerBtn = document.getElementById('cancelTimerBtn');
+
+        const chatMessagesBox = document.getElementById('chatMessagesBox');
+        const chatUnreadBadge = document.getElementById('chatUnreadBadge');
+        const kickChatDot = document.getElementById('kickChatDot');
+        const kickChatStatus = document.getElementById('kickChatStatus');
+
+        const SVG_PLAY = '<path d="M8 5v14l11-7z"/>';
+        const SVG_PAUSE = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+
+        volSlider.addEventListener('touchstart', () => { isDraggingSlider = true; });
+        volSlider.addEventListener('touchend', () => { setTimeout(() => { isDraggingSlider = false; }, 200); });
+
+        brightSlider.addEventListener('touchstart', () => { isDraggingBright = true; });
+        brightSlider.addEventListener('touchend', () => { setTimeout(() => { isDraggingBright = false; }, 300); });
+
+        function setDeckMode(mode) {
+            try {
+                if (navigator.vibrate) navigator.vibrate(20);
+                currentDeckMode = mode;
+                localStorage.setItem('tugrul_deck_mode', mode);
+
+                if (mode === 'yayin') {
+                    if (livePeekInterval) toggleLivePeek();
+                    document.body.classList.add('stream-theme');
+                    modeGenelBtn.className = 'mode-btn';
+                    modeYayinBtn.className = 'mode-btn active-yayin';
+                    document.querySelectorAll('.deck-page').forEach(p => p.classList.remove('active'));
+                    document.getElementById('tab-chat').classList.add('active');
+                    unreadChatCount = 0;
+                    chatUnreadBadge.style.display = 'none';
+                    chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+                } else {
+                    document.body.classList.remove('stream-theme');
+                    modeGenelBtn.className = 'mode-btn active-genel';
+                    modeYayinBtn.className = 'mode-btn';
+                    document.querySelectorAll('.deck-page').forEach(p => p.classList.remove('active'));
+                    const activePage = document.getElementById('tab-' + currentTab);
+                    if (activePage) activePage.classList.add('active');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+        }
+
+        function appendChatMessage(msg, isHistory = false) {
+            const empty = chatMessagesBox.querySelector('.chat-empty');
+            if (empty) empty.remove();
+
+            const line = document.createElement('div');
+            line.className = 'chat-line';
+            line.style.setProperty('--user-color', msg.color || '#53fc18');
+
+            let badgeHtml = '';
+            if (Array.isArray(msg.badges)) {
+                if (msg.badges.includes('broadcaster')) badgeHtml += '<span class="chat-badge badge-broadcaster">YAYINCI</span>';
+                if (msg.badges.includes('moderator')) badgeHtml += '<span class="chat-badge badge-moderator">MOD</span>';
+                if (msg.badges.includes('subscriber')) badgeHtml += '<span class="chat-badge badge-subscriber">SUB</span>';
+            }
+
+            const cleanText = escapeHtml(msg.text).replace(/\[emote:\d+:([^\]]+)\]/g, ':$1:');
+            line.innerHTML = `<span class="chat-time">${escapeHtml(msg.time)}</span>${badgeHtml}<span class="chat-user" style="color:${msg.color || '#53fc18'}">${escapeHtml(msg.user)}:</span><span class="chat-text">${cleanText}</span>`;
+            chatMessagesBox.appendChild(line);
+            chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+
+            if (!isHistory && currentDeckMode !== 'yayin' && currentTab !== 'chat') {
+                unreadChatCount++;
+                chatUnreadBadge.textContent = unreadChatCount > 99 ? '99+' : unreadChatCount;
+                chatUnreadBadge.style.display = 'inline-block';
+            }
+        }
+
+        function updateSliderVisual(val, muted) {
+            volSlider.value = val;
+            const activeColor = currentDeckMode === 'yayin' ? '#53fc18' : '#38bdf8';
+            const color = muted ? '#ef4444' : activeColor;
+            volSlider.style.background = `linear-gradient(to right, ${color} ${val}%, rgba(255,255,255,0.1) ${val}%)`;
+            
+            if (muted) {
+                volPercent.textContent = "SESSİZ";
+                volPercent.classList.add('muted');
+                muteBtn.textContent = "🔇";
+                muteBtn.classList.add('muted');
+                streamMuteBtn.textContent = "🔇";
+                streamMuteBtn.classList.add('muted');
+                streamVolText.textContent = "SESSİZ";
+                streamVolText.style.color = "#ef4444";
+            } else {
+                volPercent.textContent = `%${val}`;
+                volPercent.classList.remove('muted');
+                const icon = val > 50 ? "🔊" : (val > 0 ? "🔉" : "🔈");
+                muteBtn.textContent = icon;
+                muteBtn.classList.remove('muted');
+                streamMuteBtn.textContent = icon;
+                streamMuteBtn.classList.remove('muted');
+                streamVolText.textContent = `%${val}`;
+                streamVolText.style.color = "#53fc18";
+            }
+        }
+
+        function updateBrightnessVisual(val, supported = true) {
+            brightSlider.value = val;
+            brightSlider.style.background = `linear-gradient(to right, #f59e0b ${val}%, rgba(255,255,255,0.1) ${val}%)`;
+            brightPercent.textContent = supported ? `%${val}` : "Destek Yok";
+        }
+
+        function updateStatsVisual(data) {
+            headerStatsPill.textContent = `CPU %${data.cpu}`;
+
+            const cpuColor = data.cpu > 80 ? '#ef4444' : (data.cpu > 55 ? '#f59e0b' : '#38bdf8');
+            cpuValText.textContent = `%${data.cpu}`;
+            cpuValText.style.color = cpuColor;
+            cpuBarFill.style.width = `${data.cpu}%`;
+            cpuBarFill.style.backgroundColor = cpuColor;
+
+            const ramColor = data.ram_pct > 85 ? '#ef4444' : (data.ram_pct > 65 ? '#f59e0b' : '#a855f7');
+            ramValText.textContent = `${data.ram_used}/${data.ram_total} GB`;
+            ramValText.style.color = ramColor;
+            ramBarFill.style.width = `${data.ram_pct}%`;
+            ramBarFill.style.backgroundColor = ramColor;
+        }
+
+        function updateMediaVisual(title, artist, playing) {
+            trackTitle.textContent = title;
+            trackArtist.textContent = artist;
+            if (playing) {
+                musicWidget.classList.add('playing');
+                playIcon.innerHTML = SVG_PAUSE;
+            } else {
+                musicWidget.classList.remove('playing');
+                playIcon.innerHTML = SVG_PLAY;
+            }
+        }
+
+        function updateObsVisual(data) {
+            const streamBtns = document.querySelectorAll('.obs-stream-btn');
+            const streamIcons = document.querySelectorAll('.obs-stream-icon');
+            const streamLabels = document.querySelectorAll('.obs-stream-label');
+            const recordBtns = document.querySelectorAll('.obs-record-btn');
+            const recordIcons = document.querySelectorAll('.obs-record-icon');
+            const recordLabels = document.querySelectorAll('.obs-record-label');
+
+            if (!data.connected) {
+                streamObsDot.className = 'dot';
+                streamObsText.textContent = "OBS Kapalı";
+                streamObsText.style.color = "#94a3b8";
+                document.querySelectorAll('.obs-scene-btn').forEach(b => b.classList.remove('scene-active'));
+                streamBtns.forEach(b => b.classList.remove('on-air'));
+                recordBtns.forEach(b => b.classList.remove('on-air'));
+                streamLabels.forEach(l => l.textContent = "Yayın Başlat");
+                recordLabels.forEach(l => l.textContent = "Kayıt Başlat");
+                return;
+            }
+
+            if (data.streaming) {
+                streamObsDot.className = 'dot live';
+                streamObsText.textContent = "CANLI";
+                streamObsText.style.color = "#ff0033";
+                streamBtns.forEach(b => b.classList.add('on-air'));
+                streamIcons.forEach(i => i.textContent = "🔴");
+                streamLabels.forEach(l => l.textContent = "YAYINDA (Bitir)");
+            } else {
+                streamObsDot.className = 'dot connected';
+                streamObsText.textContent = "OBS Hazır";
+                streamObsText.style.color = "#53fc18";
+                streamBtns.forEach(b => b.classList.remove('on-air'));
+                streamIcons.forEach(i => i.textContent = "📡");
+                streamLabels.forEach(l => l.textContent = "Yayın Başlat");
+            }
+
+            if (data.recording) {
+                recordBtns.forEach(b => b.classList.add('on-air'));
+                recordIcons.forEach(i => i.textContent = "⏹️");
+                recordLabels.forEach(l => l.textContent = "KAYITTA (Bitir)");
+            } else {
+                recordBtns.forEach(b => b.classList.remove('on-air'));
+                recordIcons.forEach(i => i.textContent = "⏺️");
+                recordLabels.forEach(l => l.textContent = "Kayıt Başlat");
+            }
+
+            document.querySelectorAll('.obs-scene-btn').forEach(btn => {
+                if (btn.dataset.scene === data.scene) {
+                    btn.classList.add('scene-active');
+                } else {
+                    btn.classList.remove('scene-active');
+                }
+            });
+        }
+
+        function updatePowerVisual(data) {
+            if (data.active && data.remaining > 0) {
+                const mins = Math.floor(data.remaining / 60);
+                const secs = data.remaining % 60;
+                const formatted = `${mins} dk ${secs < 10 ? '0' : ''}${secs} sn`;
+                timerBanner.classList.remove('inactive');
+                timerText.textContent = `⏳ Kapanmaya: ${formatted}`;
+                cancelTimerBtn.style.display = 'inline-block';
+            } else {
+                timerBanner.classList.add('inactive');
+                timerText.textContent = "⏱️ Aktif kapatma sayacı yok";
+                cancelTimerBtn.style.display = 'none';
+            }
+        }
+
+        function toggleLivePeek() {
+            if (livePeekInterval) {
+                clearInterval(livePeekInterval);
+                livePeekInterval = null;
+                liveStreamBtn.textContent = "▶️ Canlı İzle";
+                liveStreamBtn.classList.remove('streaming');
+            } else {
+                sendCmd('get_screen', null);
+                livePeekInterval = setInterval(() => sendCmd('get_screen', null), 550);
+                liveStreamBtn.textContent = "⏹️ Durdur";
+                liveStreamBtn.classList.add('streaming');
+            }
+        }
+
+        function onSliderInput(val) {
+            updateSliderVisual(val, false);
+            sendCmd('set_volume', val);
+        }
+
+        function onBrightnessInput(val) {
+            updateBrightnessVisual(val, true);
+            sendCmd('set_brightness', val);
+        }
+
+        function switchTab(tabName, btnElement) {
+            if (navigator.vibrate) navigator.vibrate(20);
+            currentTab = tabName;
+
+            if (tabName !== 'sistem' && livePeekInterval) {
+                toggleLivePeek();
+            }
+
+            document.querySelectorAll('.deck-page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabName).classList.add('active');
+            btnElement.classList.add('active');
+
+            if (tabName === 'sistem') {
+                sendCmd('get_screen', null);
+            } else if (tabName === 'chat') {
+                unreadChatCount = 0;
+                chatUnreadBadge.style.display = 'none';
+                chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+            }
+        }
+
+        function sendCmd(action, value) {
+            if (navigator.vibrate && action !== 'set_volume' && action !== 'set_brightness' && action !== 'get_screen') {
+                navigator.vibrate(35);
+            }
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ action: action, value: value }));
+            }
+        }
+
+        function connect() {
+            const targetIp = PC_IP || "PC_IP_ADDRESS"; // Replace with your PC's IP if needed   
+            ws = new WebSocket(`ws://${targetIp}:8765`);
+            
+            ws.onopen = () => {
+                statusDot.classList.add('connected');
+                statusText.textContent = "Bağlı";
+                statusText.style.color = "#22c55e";
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === "volume_update" && !isDraggingSlider) {
+                        updateSliderVisual(data.level, data.muted);
+                    } else if (data.type === "brightness_update" && !isDraggingBright) {
+                        updateBrightnessVisual(data.level, data.supported);
+                    } else if (data.type === "stats_update") {
+                        updateStatsVisual(data);
+                    } else if (data.type === "media_update") {
+                        updateMediaVisual(data.title, data.artist, data.playing);
+                    } else if (data.type === "obs_update") {
+                        updateObsVisual(data);
+                    } else if (data.type === "power_update") {
+                        updatePowerVisual(data);
+                    } else if (data.type === "screen_frame") {
+                        screenPreviewImg.src = data.image;
+                        screenPreviewImg.style.display = 'block';
+                        screenPlaceholder.style.display = 'none';
+                    } else if (data.type === "chat_status") {
+                        if (data.connected) {
+                            kickChatDot.className = 'dot connected';
+                            kickChatStatus.textContent = `kick.com/${data.channel} (Canlı)`;
+                        } else {
+                            kickChatDot.className = 'dot';
+                            kickChatStatus.textContent = `kick.com/${data.channel} (Bağlanıyor...)`;
+                        }
+                    } else if (data.type === "chat_message") {
+                        appendChatMessage(data, false);
+                    } else if (data.type === "chat_history") {
+                        chatMessagesBox.innerHTML = '';
+                        if (!data.messages || data.messages.length === 0) {
+                            chatMessagesBox.innerHTML = '<div class="chat-empty" id="chatEmptyState">🟢 Sohbet temizlendi.<br>Yeni mesajlar burada akacak.</div>';
+                        } else {
+                            data.messages.forEach(m => appendChatMessage(m, true));
+                        }
+                    }
+                } catch (err) {
+                    console.error("Mesaj işleme hatası:", err);
+                }
+            };
+            
+            ws.onclose = () => {
+                statusDot.classList.remove('connected');
+                statusText.textContent = "Yok";
+                statusText.style.color = "#ef4444";
+                if (livePeekInterval) toggleLivePeek();
+                setTimeout(connect, 2000);
+            };
+        }
+
+        const savedMode = localStorage.getItem('tugrul_deck_mode');
+        if (savedMode === 'yayin') {
+            setDeckMode('yayin');
+        }
+
+        connect();
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>
